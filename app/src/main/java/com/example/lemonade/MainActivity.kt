@@ -99,8 +99,14 @@ fun LemonadeScreen(modifier: Modifier = Modifier) {
         1 -> R.string.screenOneDescription
         2 -> R.string.screenTwoDescription
         3 -> R.string.screenThreeDescription
-        4 -> R.string.screenFourDescription
-        else -> R.string.screenOneDescription
+        else -> R.string.screenFourDescription
+    }
+
+    val contentLabel = when (currentStep) {
+        1 -> R.string.screenOneTitle
+        2 -> R.string.screenTwoTitle
+        3 -> R.string.screenThreeTitle
+        else -> R.string.screenFourTitle
     }
 
     Column(
@@ -109,7 +115,7 @@ fun LemonadeScreen(modifier: Modifier = Modifier) {
     ) {
         Image(
             painter = painterResource(imageResource),
-            contentDescription = "Lemon tree",
+            contentDescription = contentLabel.toString(),
             modifier = Modifier
                 .background(
                     color = Color.LightGray,
