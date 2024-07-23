@@ -13,9 +13,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,10 +50,29 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview()
 @Composable
 fun LemonadeApp() {
-    /*TopBar()*/
+    Scaffold (
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Lemonade",
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            )
+
+        },
+    ){
+    //TODO add logic
+    }
+
     LemonadeScreen(
         modifier = Modifier
             .fillMaxSize()
@@ -56,29 +80,14 @@ fun LemonadeApp() {
     )
 }
 
-/*@Composable
-fun TopBar() {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Yellow,
-                    titleContentColor = Color.Black,
-                ),
-                title = { Text(text = "Lemonade") }
-            )
-        },
-    )
-
-}*/
-
-
 @Composable
 fun LemonadeScreen(modifier: Modifier = Modifier) {
-    var result by remember { mutableStateOf(1) }
+    var currentStep by remember { mutableStateOf(1) }
     var squeezeValue by remember { mutableStateOf(0) }
 
-    val imageResource = when(result) {
+
+
+    val imageResource = when(currentStep) {
         1 -> R.drawable.lemon_tree
         2 -> R.drawable.lemon_squeeze
         3 -> R.drawable.lemon_drink
@@ -86,7 +95,7 @@ fun LemonadeScreen(modifier: Modifier = Modifier) {
         else -> R.drawable.lemon_tree
     }
 
-    val screenDescription = when (result) {
+    val screenDescription = when (currentStep) {
         1 -> R.string.screenOneDescription
         2 -> R.string.screenTwoDescription
         3 -> R.string.screenThreeDescription
@@ -107,7 +116,7 @@ fun LemonadeScreen(modifier: Modifier = Modifier) {
                     shape = RoundedCornerShape(16.dp)
                 )
                 .clickable(onClick = {
-                    result = (1..4).random()
+                    currentStep = (1..4).random()
                     /*if(result == 2) {
                     result = (1..4).random()
                     } else {
