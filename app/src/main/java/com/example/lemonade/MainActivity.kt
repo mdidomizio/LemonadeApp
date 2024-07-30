@@ -50,6 +50,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+fun onClick(function: () -> Unit) {
+    var squeezeValue = (1..4).random()
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview()
 @Composable
@@ -73,41 +77,57 @@ fun LemonadeApp() {
     //TODO add logic
     }
 
+    var currentStep = 0
     LemonadeScreen(
         modifier = Modifier
             .fillMaxSize()
             .wrapContentSize(Alignment.Center)
-    )
+    ) {
+        when (currentStep) {
+            1 -> Image(
+                painterResource(R.drawable.lemon_tree),
+                contentDescription = R.string.screenOneTitle,
+                modifier = Modifier.
+                clickable { currentStep = 2 }
+            )
+            Text(stringResource(R.string.screenOneDescription))
+            2 ->  Image(
+                painterResource(R.drawable.lemon_squeeze),
+                contentDescription = R.string.screenTwoTitle,
+                modifier = Modifier.
+                clickable { currentStep = 3 }
+            )
+            Text(stringResource(R.string.screenTwoDescription))
+            3 -> Image(
+                painterResource(R.drawable.lemon_drink),
+                contentDescription = R.string.screenThreeTitle,
+                modifier = Modifier.
+                clickable { currentStep = 4 }
+            )
+            Text(stringResource(R.string.screenThreeDescription))
+            4 -> Image(
+                painterResource(R.drawable.lemon_restart),
+                contentDescription = R.string.screenFourTitle,
+                modifier = Modifier.
+                clickable {
+                    currentStep = 1
+                    onClick()
+                }
+            )
+            Text(stringResource(R.string.screenFourDescription))
+        }
+    }
 }
 
 @Composable
-fun LemonadeScreen(modifier: Modifier = Modifier) {
+fun LemonadeScreen(
+    modifier: Modifier = Modifier,
+    imageResource: Int,
+    screenDescription: String,
+    contentLabel: String,
+) {
     var currentStep by remember { mutableStateOf(1) }
     var squeezeValue by remember { mutableStateOf(0) }
-
-
-
-    val imageResource = when(currentStep) {
-        1 -> R.drawable.lemon_tree
-        2 -> R.drawable.lemon_squeeze
-        3 -> R.drawable.lemon_drink
-        4 -> R.drawable.lemon_restart
-        else -> R.drawable.lemon_tree
-    }
-
-    val screenDescription = when (currentStep) {
-        1 -> R.string.screenOneDescription
-        2 -> R.string.screenTwoDescription
-        3 -> R.string.screenThreeDescription
-        else -> R.string.screenFourDescription
-    }
-
-    val contentLabel = when (currentStep) {
-        1 -> R.string.screenOneTitle
-        2 -> R.string.screenTwoTitle
-        3 -> R.string.screenThreeTitle
-        else -> R.string.screenFourTitle
-    }
 
     Column(
         modifier = modifier,
@@ -134,6 +154,6 @@ fun LemonadeScreen(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(stringResource(screenDescription), fontSize = 18.sp)
+        Text(stringResource(screenDescription.toInt()), fontSize = 18.sp)
     }
 }
