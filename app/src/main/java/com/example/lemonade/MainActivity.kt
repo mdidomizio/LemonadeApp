@@ -7,19 +7,19 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,89 +51,103 @@ class MainActivity : ComponentActivity() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview()
+@Preview
 @Composable
-fun LemonadeApp() {
-    Scaffold (
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Lemonade",
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            )
-
-        },
-    ){
-    //TODO add logic
-    }
-
-    LemonadeScreen(
-        modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(Alignment.Center)
-    )
-}
-
-@Composable
-fun LemonadeScreen(modifier: Modifier = Modifier) {
+fun LemonadeApp(
+) {
     var currentStep by remember { mutableStateOf(1) }
     var squeezeValue by remember { mutableStateOf(0) }
 
+    Scaffold(topBar = {
+        CenterAlignedTopAppBar(
+            title = {
+                Text(
+                    text = "Lemonade", fontWeight = FontWeight.Bold
+                )
+            }, colors = TopAppBarDefaults.largeTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            )
+        )
 
+    }) { innerPadding ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(MaterialTheme.colorScheme.tertiaryContainer),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            when (currentStep) {
+                1 -> {
+                    LemonadeScreen(imageResource = R.drawable.lemon_tree,
+                        screenDescription = R.string.screenOneDescription.toString(),
+                        contentLabel = R.string.screenOneTitle.toString(),
+                        onScreenClick = {
+                            currentStep = 2
+                            squeezeValue = (2..4).random()
+                        })
+                }
 
-    val imageResource = when(currentStep) {
-        1 -> R.drawable.lemon_tree
-        2 -> R.drawable.lemon_squeeze
-        3 -> R.drawable.lemon_drink
-        4 -> R.drawable.lemon_restart
-        else -> R.drawable.lemon_tree
+                2 -> {
+                    LemonadeScreen(imageResource = R.drawable.lemon_squeeze,
+                        screenDescription = R.string.screenTwoDescription.toString(),
+                        contentLabel = R.string.screenTwoTitle.toString(),
+                        onScreenClick = {
+                            squeezeValue--
+                            if(squeezeValue == 0) currentStep = 3
+                        })
+                }
+
+                3 -> {
+                    LemonadeScreen(imageResource = R.drawable.lemon_drink,
+                        screenDescription = R.string.screenThreeDescription.toString(),
+                        contentLabel = R.string.screenThreeTitle.toString(),
+                        onScreenClick = {
+                            currentStep = 4
+                        })
+                }
+
+                4 -> {
+                    LemonadeScreen(
+                        imageResource = R.drawable.lemon_restart,
+                        screenDescription = R.string.screenFourDescription.toString(),
+                        contentLabel = R.string.screenFourTitle.toString(),
+                        onScreenClick = {
+                            currentStep = 1
+                        }
+                    )
+                }
+            }
+        }
     }
+}
 
-    val screenDescription = when (currentStep) {
-        1 -> R.string.screenOneDescription
-        2 -> R.string.screenTwoDescription
-        3 -> R.string.screenThreeDescription
-        else -> R.string.screenFourDescription
-    }
-
-    val contentLabel = when (currentStep) {
-        1 -> R.string.screenOneTitle
-        2 -> R.string.screenTwoTitle
-        3 -> R.string.screenThreeTitle
-        else -> R.string.screenFourTitle
-    }
-
+@Composable
+fun LemonadeScreen(
+    imageResource: Int,
+    screenDescription: String,
+    contentLabel: String,
+    onScreenClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier.fillMaxSize(),
     ) {
         Image(
             painter = painterResource(imageResource),
-            contentDescription = contentLabel.toString(),
+            contentDescription = contentLabel,
             modifier = Modifier
                 .background(
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(16.dp)
+                    color = Color.LightGray, shape = RoundedCornerShape(16.dp)
                 )
-                .clickable(onClick = {
-                    currentStep = (1..4).random()
-                    /*if(result == 2) {
-                    result = (1..4).random()
-                    } else {
-                        // TODO add the logic for navigating
-                    }*/
-                })
+                .clickable(onClick = onScreenClick)
 
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(stringResource(screenDescription), fontSize = 18.sp)
+        Text(stringResource(screenDescription.toInt()), fontSize = 18.sp)
     }
 }
